@@ -1,3 +1,5 @@
+// Script from the Sebastian Lague series on Procedural Terrain Generation https://www.youtube.com/playlist?list=PLFt_AvWsXl0eBW2EiBtl_sxmDtSgZBxB3
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
