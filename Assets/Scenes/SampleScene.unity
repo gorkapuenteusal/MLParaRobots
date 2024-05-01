@@ -190,6 +190,13 @@ MonoBehaviour:
   seed: 21
   offset: {x: 13.4, y: 6.26}
   autoUpdate: 1
+  regions:
+  - name: Water
+    height: 0.4
+    color: {r: 0.11091984, g: 0.26758462, b: 0.7874606, a: 0}
+  - name: Land
+    height: 1
+    color: {r: 0.16925986, g: 0.6298001, b: 0.16165183, a: 0}
 --- !u!1 &914009096
 GameObject:
   m_ObjectHideFlags: 0
