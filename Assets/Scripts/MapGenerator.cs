@@ -8,7 +8,7 @@ using System.Threading;
 
 public class MapGenerator : MonoBehaviour
 {
-  public enum DrawMode {NoiseMap, ColorMap, Mesh};
+  public enum DrawMode {NoiseMap, ColorMap, Mesh, EdgeMap};
   public DrawMode drawMode;
 
   public Noise.NormalizeMode normalizeMode;
@@ -39,6 +39,12 @@ public class MapGenerator : MonoBehaviour
   Queue<MapThreadInfo<MapData>> mapDataThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
   Queue<MapThreadInfo<MeshData>> meshDataThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
 
+  float[,] edgeMap;
+
+  void Awake() {
+    edgeMap = EdgeGenerator.GenerateEdgeMap(mapChunkSize);
+  }
+
   public void DrawMapInEditor() {
     MapData mapData = GenerateMapData(Vector2.zero);
     MapDisplay display = FindObjectOfType<MapDisplay>();
@@ -48,6 +54,8 @@ public class MapGenerator : MonoBehaviour
       display.DrawTexture(TextureGenerator.TextureFromColorMap(mapData.colorMap, mapChunkSize, mapChunkSize));
     else if (drawMode == DrawMode.Mesh)
       display.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, meshHeightCurve, editorPreviewLOD), TextureGenerator.TextureFromColorMap(mapData.colorMap, mapChunkSize, mapChunkSize));
+    else if (drawMode == DrawMode.EdgeMap)
+      display.DrawTexture(TextureGenerator.TextureFromHeightMap(EdgeGenerator.GenerateEdgeMap(mapChunkSize)));
   }
 
   public void RequestMapData(Vector2 center, Action<MapData> callback) {
@@ -105,6 +113,7 @@ public class MapGenerator : MonoBehaviour
     {
         for (int x = 0; x < mapChunkSize; x++)
         {
+            noiseMap[x, y] = Mathf.Clamp01(edgeMap[x, y] - noiseMap[x, y]);
             float currentHeight = noiseMap[x, y];
             for (int i = 0; i < regions.Length; i++)
             {
@@ -126,6 +135,8 @@ public class MapGenerator : MonoBehaviour
     if (octaves < 0) {
       octaves = 0;
     }
+
+    edgeMap = EdgeGenerator.GenerateEdgeMap(mapChunkSize);
   }
 
   struct MapThreadInfo<T> {
